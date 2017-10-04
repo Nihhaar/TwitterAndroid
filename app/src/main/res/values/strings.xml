@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Twitter</string>
+    <string name="signin">SIGN IN</string>
+    <string name="signinLink">Sign in</string>
+    <string name="signinHint">Already a member?</string>
+    <string name="username">Email</string>
+    <string name="username_summary">Your signed in Email</string>
+    <string name="password">Password</string>
+    <string name="password_summary">.........</string>
+    <string name="register">REGISTER</string>
+    <string name="registerLink">Register Now</string>
+    <string name="registerHint">Not a member?</string>
 </resources>

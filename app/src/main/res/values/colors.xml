@@ -5,5 +5,8 @@
     <color name="colorAccent">#FF4081</color>
 
     <!-- Custom colors -->
-    <color name="darkBrown">#473538</color>
+    <color name="darkBrown">#2A1F21</color>
+    <color name="darkBrownIndent">#312527</color>
+    <color name="text">@color/colorAccent</color>
+    <color name="textHint">#59494B</color>
 </resources>
