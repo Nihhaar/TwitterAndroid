@@ -32,7 +32,6 @@ import java.net.URLEncoder;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final String TAG = "LoginCheck";
-    private static final String PREFS_FILE = "login_prefs";
     Button button_sign;
     private TextView tv_register;
     private EditText inputEmail;
@@ -72,7 +71,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Toast.makeText(LoginActivity.this, "Unable to connect to server", Toast.LENGTH_SHORT).show();
                         }
                         else {
-                            logins = getSharedPreferences(PREFS_FILE, MODE_PRIVATE);
+                            logins = getSharedPreferences(AppUtils.LOGIN_PREFS_FILE, MODE_PRIVATE);
                             if(parseJsonData(response)) {
                                 Intent main = new Intent(LoginActivity.this, MainActivity.class);
                                 startActivity(main);

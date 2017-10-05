@@ -15,6 +15,8 @@ public class AppUtils {
     public static String webApp = "TwitterBackend";
     public static int servPort = 8080;
 
+    public static final String LOGIN_PREFS_FILE = "login_prefs";
+
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
