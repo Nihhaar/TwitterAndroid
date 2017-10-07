@@ -11,4 +11,9 @@
     <string name="register">REGISTER</string>
     <string name="registerLink">Register Now</string>
     <string name="registerHint">Not a member?</string>
+
+    <string name="action_search">Search</string>
+    <string name="add_post">Add Post</string>
+    <string name="view_posts"> View Posts</string>
+
 </resources>

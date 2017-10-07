@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Search Box -->
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_search"
+        android:title="@string/action_search"
+        app:showAsAction="ifRoom"/>
+
+    <!-- Add Post Button -->
+    <item
+        android:id="@+id/add_post"
+        android:icon="@drawable/ic_action_add_circle"
+        android:title="@string/add_post"
+        app:showAsAction="ifRoom"/>
+
+    <!-- View Posts -->
+    <item android:id="@+id/view_posts"
+        android:title="@string/view_posts"
+        app:showAsAction="never"/>
+
+</menu>
