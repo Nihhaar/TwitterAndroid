@@ -170,6 +170,9 @@ public class MainActivity extends AppCompatActivity{
                 return true;
             case R.id.view_posts:
                 return true;
+            case R.id.logout:
+                AppUtils.logOut(this);
+                return true;
             default:
                 return false;
         }
@@ -261,6 +264,8 @@ public class MainActivity extends AppCompatActivity{
                             changeInvalidUser();
                         }
                     }
+                    else
+                        AppUtils.logOut(mContext);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -357,6 +362,8 @@ public class MainActivity extends AppCompatActivity{
                             cursor.addRow(row);
                         }
                     }
+                    else
+                        AppUtils.logOut(mContext);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

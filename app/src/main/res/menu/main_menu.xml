@@ -22,4 +22,9 @@
         android:title="@string/view_posts"
         app:showAsAction="never"/>
 
+    <!-- Logout -->
+    <item android:id="@+id/logout"
+        android:title="@string/logout"
+        app:showAsAction="never"/>
+
 </menu>

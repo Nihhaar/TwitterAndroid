@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         public LoginAsyncTask(Context mContext, MyInterface mListener){
             this.mContext = mContext;
-            this.mListener  = mListener;
+            this.mListener = mListener;
         }
 
         @Override
@@ -172,7 +172,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             String result = "0";
             if(AppUtils.isNetworkAvailable(mContext)){
                 try {
-                    /* Authenticate with the server, if success store the credentials in shred prefs */
+                    /* Authenticate with the server, if success store the credentials in shared prefs */
 
                     /* Saving the session cookies */
                     CookieManager cookieManager = new CookieManager(new PersistentCookieStore(mContext), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
