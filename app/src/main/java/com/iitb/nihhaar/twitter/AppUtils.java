@@ -1,8 +1,12 @@
 package com.iitb.nihhaar.twitter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Nihhaar on 10/4/2017.

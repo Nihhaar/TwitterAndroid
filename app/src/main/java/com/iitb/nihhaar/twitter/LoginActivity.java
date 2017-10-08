@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -148,8 +151,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
      * We are using this interface to generate a toast message on UI thread using the asynctask.
      * Note that this can also be done using the 'runOnUiThread' method.
      */
-    public interface MyInterface {
-        public void myMethod(String result);
+    interface MyInterface {
+        void myMethod(String result);
     }
 
     /* LoginAsyncTask - AsyncTask for login check */
@@ -170,6 +173,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if(AppUtils.isNetworkAvailable(mContext)){
                 try {
                     /* Authenticate with the server, if success store the credentials in shred prefs */
+
+                    /* Saving the session cookies */
+                    CookieManager cookieManager = new CookieManager(new PersistentCookieStore(mContext), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+                    CookieHandler.setDefault(cookieManager);
+
                     URLConnection conn = new URL(args[0]).openConnection();
                     conn.setDoOutput(true);
 
@@ -198,7 +206,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                 } catch (IOException ex){
                     result = "1";
-                    Log.e(mTAG, "Unable to connect to server");
                     ex.printStackTrace();
                 }
             }

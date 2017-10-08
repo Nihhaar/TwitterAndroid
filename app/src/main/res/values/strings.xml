@@ -15,5 +15,10 @@
     <string name="action_search">Search</string>
     <string name="add_post">Add Post</string>
     <string name="view_posts"> View Posts</string>
+    <string name="search_hint">Search for users</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+    <string name="cancel">Cancel</string>
+    <string name="invalid_user">No such user found</string>
 
 </resources>
