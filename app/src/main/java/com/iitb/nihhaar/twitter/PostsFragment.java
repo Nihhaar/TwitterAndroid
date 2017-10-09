@@ -41,6 +41,7 @@ public class PostsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private EndlessRecyclerViewScrollListener scrollListener;
+    private int currentPostPosition;
 
     private static String TAG = "PostFragment";
     private static String PAGE_SIZE = "10";
@@ -121,6 +122,7 @@ public class PostsFragment extends Fragment {
                     Posts posts = new Posts();
                     posts.setPostUser(jobj.getString("uid"));
                     posts.setPostText(jobj.getString("text"));
+                    posts.setPostid(jobj.getInt("postid"));
 
                     /* Comment data */
                     JSONArray cArr = jobj.getJSONArray("Comment");

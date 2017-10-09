@@ -68,6 +68,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         Posts posts = mDataset.get(position);
         holder.mPostUser.setText(posts.getPostUser());
         holder.mPostText.setText(posts.getPostText());
+        holder.mComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /* Handle add comment feature */
+            }
+        });
 
         ArrayAdapter<Comments> mCommentsAdapter = new CommentsAdapter(mContext, posts.getComments());
         holder.mCommentView.setList(mContext, mCommentsAdapter);

@@ -169,6 +169,8 @@ public class MainActivity extends AppCompatActivity{
             case R.id.action_search:
                 return true;
             case R.id.add_post:
+                Intent addPost = new Intent(MainActivity.this, AddPostActivity.class);
+                startActivity(addPost);
                 return true;
             case R.id.view_posts:
                 return true;

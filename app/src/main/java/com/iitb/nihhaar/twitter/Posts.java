@@ -10,6 +10,7 @@ public class Posts {
     private String postUser;
     private String postText;
     private ArrayList<Comments> comments;
+    private int postid;
 
     public void setPostUser(String postUser){
         this.postUser = postUser;
@@ -23,6 +24,10 @@ public class Posts {
         this.comments = comments;
     }
 
+    public void setPostid(int postid) {
+        this.postid = postid;
+    }
+
     public String getPostText() {
         return postText;
     }
@@ -33,5 +38,9 @@ public class Posts {
 
     public ArrayList<Comments> getComments() {
         return comments;
+    }
+
+    public int getPostid() {
+        return postid;
     }
 }
