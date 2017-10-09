@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity{
 
     private SearchView searchView;
     private List<String> suggestions;
-    private final static String TAG = "Search";
+    private final static String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity{
         // App Bar or Action Bar
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+        myPostsFragment();
     }
 
     @Override
@@ -177,6 +179,19 @@ public class MainActivity extends AppCompatActivity{
                 return false;
         }
 
+    }
+
+    private void myPostsFragment(){
+        // Create new fragment and transaction
+        Fragment newFragment = new PostsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // Don't add the transaction to the back stack
+        transaction.add(R.id.fragment_container, newFragment);
+
+        // Commit the transaction
+        transaction.commit();
     }
 
     private void changeUserFragment(String uid){

@@ -9,4 +9,5 @@
     <color name="darkBrownIndent">#312527</color>
     <color name="text">@color/colorAccent</color>
     <color name="textHint">#59494B</color>
+    <color name="pbg">#E0E6E9</color>
 </resources>
