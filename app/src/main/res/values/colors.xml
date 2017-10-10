@@ -10,4 +10,6 @@
     <color name="text">@color/colorAccent</color>
     <color name="textHint">#59494B</color>
     <color name="pbg">#E0E6E9</color>
+    <color name="dark_white">#B0B0AE</color>
+    <color name="darker_white">#8C8C8B</color>
 </resources>

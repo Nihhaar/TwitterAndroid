@@ -44,7 +44,7 @@ public class CustomLinearLayout extends LinearLayout{
                 if(i==2){
                     TextView moreComments = new TextView(context);
                     moreComments.setText("More Comments");
-                    moreComments.setTextColor(context.getResources().getColor(android.R.color.holo_blue_dark, null));
+                    moreComments.setTextColor(context.getResources().getColor(R.color.colorAccent, null));
                     moreComments.setOnClickListener(new View.OnClickListener(){
                         public void onClick(View v){
                             setVisibleList(context, list);
@@ -67,7 +67,7 @@ public class CustomLinearLayout extends LinearLayout{
                 if(i==this.list.getCount()-1){
                     TextView lessComments = new TextView(context);
                     lessComments.setText("Less Comments");
-                    lessComments.setTextColor(context.getResources().getColor(android.R.color.holo_blue_dark, null));
+                    lessComments.setTextColor(context.getResources().getColor(R.color.colorAccent, null));
                     lessComments.setOnClickListener(new View.OnClickListener(){
                         public void onClick(View v){
                             setList(context, list);
