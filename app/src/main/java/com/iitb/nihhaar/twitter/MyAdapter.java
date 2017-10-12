@@ -1,16 +1,28 @@
 package com.iitb.nihhaar.twitter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -28,6 +40,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView mPostUser, mPostText, mComment;
         public CustomLinearLayout mCommentView;
+        public ImageView mImageView;
 
         public ViewHolder(View view) {
             super(view);
@@ -35,6 +48,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             mPostText = (TextView) view.findViewById(R.id.posttext);
             mComment = (TextView) view.findViewById(R.id.comment);
             mCommentView = (CustomLinearLayout) view.findViewById(R.id.commentView);
+            mImageView = (ImageView) view.findViewById(R.id.img_post);
         }
     }
 
@@ -68,6 +82,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         Posts posts = mDataset.get(position);
         holder.mPostUser.setText(posts.getPostUser());
         holder.mPostText.setText(posts.getPostText());
+
+        final ImageView imageView = holder.mImageView;
+        if(posts.isHasImage()) {
+            ViewGroup.LayoutParams params = imageView.getLayoutParams();
+            int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, mContext.getResources().getDisplayMetrics());
+            params.height = height;
+            imageView.setLayoutParams(params);
+            ImageFetchTask imageFetchTask = new ImageFetchTask(mContext, new MyInterface() {
+                @Override
+                public void myMethod(Bitmap result) {
+                    imageView.setImageTintList(null);
+                    imageView.setImageBitmap(result);
+                }
+            });
+            String url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/GetPostImage";
+            imageFetchTask.execute(url, String.valueOf(posts.getPostid()));
+        }
+        else {
+            holder.mImageView.setImageBitmap(null);
+        }
+
         holder.mComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,4 +123,81 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public int getItemCount() {
         return mDataset.size();
     }
+
+    /* Converts byte array from given filename to bitmap */
+    public Bitmap getPostBitmap(String filename){
+        File file = new File(mContext.getFilesDir(), filename);
+        return BitmapFactory.decodeFile(file.getPath());
+    }
+
+    /* InputStream to ByteArray and then convert into Bitmap */
+    public static Bitmap readFullyToBitmap(InputStream input) throws IOException
+    {
+        byte[] buffer = new byte[8192];
+        int bytesRead, length = 0;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        while ((bytesRead = input.read(buffer)) != -1)
+        {
+            output.write(buffer, 0, bytesRead);
+            length += bytesRead;
+        }
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(output.toByteArray(), 0, length);
+        if(bitmap == null)
+            Log.d("Bitmap", "Bitmap is actually null");
+        return bitmap;
+    }
+
+    interface MyInterface {
+        void myMethod(Bitmap result);
+    }
+
+    /* ImageFetchTask - AsyncTask for fetching post images */
+    private class ImageFetchTask extends AsyncTask<String, Void, Bitmap> {
+        private String mTAG = "ImageFetchTask";
+        private MyInterface mListener;
+        private Context mContext;
+
+        public ImageFetchTask(Context mContext, MyInterface mListener){
+            this.mContext = mContext;
+            this.mListener = mListener;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... args) {
+            if(AppUtils.isNetworkAvailable(mContext)){
+                try {
+                    /* Authenticate with the server, if success store the credentials in shared prefs */
+                    URLConnection conn = new URL(args[0]).openConnection();
+                    conn.setDoOutput(true);
+
+                    /* Create the post data */
+                    String data = URLEncoder.encode("postid", "UTF-8")
+                            + "=" + URLEncoder.encode(args[1], "UTF-8");
+
+                    Log.d(mTAG, "Connecting to Server for Images for post " + args[1]);
+
+                    /* Post the data */
+                    OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+                    writer.write(data);
+                    writer.flush();
+                    writer.close();
+
+                    /* Get the response from server and convert into bitmap */
+                    return readFullyToBitmap(conn.getInputStream());
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            if (mListener != null)
+                mListener.myMethod(result);
+        }
+    }
+
 }

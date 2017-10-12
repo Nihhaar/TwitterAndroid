@@ -69,10 +69,10 @@ public class PersistentCookieStore implements CookieStore {
      * @param context The application context
      */
     public PersistentCookieStore(Context context) {
-        // prevent context leaking by getting the application context
+        // Prevent context leaking by getting the application context
         mContext = context.getApplicationContext();
 
-        // get the default in memory store and if there is a cookie stored in shared preferences,
+        // Get the default in memory store and if there is a cookie stored in shared preferences,
         // we added it to the cookie store
         mStore = new CookieManager().getCookieStore();
         String jsonSessionCookie = getJsonSessionCookieString();

@@ -2,20 +2,17 @@ package com.iitb.nihhaar.twitter;
 
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -23,6 +20,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -89,7 +88,7 @@ public class PostsFragment extends Fragment {
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-        String url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/SeeMyPosts";
+        String url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/SeePosts";
         PostFetch postFetch = new PostFetch(getContext(), new MyInterface() {
             @Override
             public void myMethod(String response) {
@@ -114,7 +113,6 @@ public class PostsFragment extends Fragment {
             Boolean status = jsonObject.getBoolean("status");
             if(status){
                 JSONArray jsonArr = jsonObject.getJSONArray("data");
-                Log.d(TAG, jsonArr.toString());
                 for (int index = 0; index < jsonArr.length(); index++) {
                     JSONObject jobj = jsonArr.getJSONObject(index);
 
@@ -123,6 +121,7 @@ public class PostsFragment extends Fragment {
                     posts.setPostUser(jobj.getString("uid"));
                     posts.setPostText(jobj.getString("text"));
                     posts.setPostid(jobj.getInt("postid"));
+                    posts.setHasImage(jobj.getBoolean("hasimg"));
 
                     /* Comment data */
                     JSONArray cArr = jobj.getJSONArray("Comment");

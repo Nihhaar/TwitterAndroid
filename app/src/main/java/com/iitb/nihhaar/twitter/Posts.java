@@ -11,6 +11,7 @@ public class Posts {
     private String postText;
     private ArrayList<Comments> comments;
     private int postid;
+    private boolean hasImage;
 
     public void setPostUser(String postUser){
         this.postUser = postUser;
@@ -28,6 +29,10 @@ public class Posts {
         this.postid = postid;
     }
 
+    public void setHasImage(boolean hasImage) {
+        this.hasImage = hasImage;
+    }
+
     public String getPostText() {
         return postText;
     }
@@ -42,5 +47,9 @@ public class Posts {
 
     public int getPostid() {
         return postid;
+    }
+
+    public boolean isHasImage() {
+        return hasImage;
     }
 }

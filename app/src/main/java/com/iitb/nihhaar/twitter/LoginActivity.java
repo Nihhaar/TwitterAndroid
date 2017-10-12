@@ -34,7 +34,7 @@ import java.net.URLEncoder;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private static final String TAG = "LoginCheck";
+    private static final String TAG = "LoginActivity";
     Button button_sign;
     private TextView tv_register;
     private EditText inputEmail;
@@ -173,11 +173,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if(AppUtils.isNetworkAvailable(mContext)){
                 try {
                     /* Authenticate with the server, if success store the credentials in shared prefs */
-
-                    /* Saving the session cookies */
-                    CookieManager cookieManager = new CookieManager(new PersistentCookieStore(mContext), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
-                    CookieHandler.setDefault(cookieManager);
-
                     URLConnection conn = new URL(args[0]).openConnection();
                     conn.setDoOutput(true);
 

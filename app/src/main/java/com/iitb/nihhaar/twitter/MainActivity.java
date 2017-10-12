@@ -121,8 +121,8 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public boolean onSuggestionClick(int position) {
-                searchView.setQuery(suggestions.get(position), false);
-                searchView.clearFocus();
+                //searchView.setQuery(suggestions.get(position), false);
+                //searchView.clearFocus();
                 changeUserFragment(suggestions.get(position));
                 return true;
             }
@@ -199,6 +199,9 @@ public class MainActivity extends AppCompatActivity{
     private void changeUserFragment(String uid){
         // Create new fragment and transaction
         Fragment newFragment = new UserFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("uid", uid);
+        newFragment.setArguments(bundle);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,

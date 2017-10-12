@@ -21,7 +21,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AppUtils {
 
-    public static String servIP = "10.0.2.2";
+    public static String servIP = "192.168.100.3";
     public static String webApp = "TwitterBackend";
     public static int servPort = 8080;
 
