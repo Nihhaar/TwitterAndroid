@@ -170,6 +170,9 @@ public class MainActivity extends AppCompatActivity{
             case R.id.view_posts:
                 myPostsFragment(true);
                 return true;
+            case R.id.app_home:
+                myPostsFragment(false);
+                return true;
             case R.id.logout:
                 AppUtils.logOut(this);
                 return true;
@@ -188,7 +191,6 @@ public class MainActivity extends AppCompatActivity{
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
-        // Don't add the transaction to the back stack
         transaction.add(R.id.fragment_container, newFragment);
 
         // Commit the transaction

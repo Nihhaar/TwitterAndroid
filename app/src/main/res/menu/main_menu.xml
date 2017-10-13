@@ -17,6 +17,13 @@
         android:title="@string/add_post"
         app:showAsAction="ifRoom"/>
 
+    <!-- Home Button -->
+    <item
+        android:id="@+id/app_home"
+        android:icon="@drawable/ic_action_home"
+        android:title="@string/app_home"
+        app:showAsAction="always"/>
+
     <!-- View Posts -->
     <item android:id="@+id/view_posts"
         android:title="@string/view_posts"

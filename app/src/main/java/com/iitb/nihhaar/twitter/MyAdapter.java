@@ -102,7 +102,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             imageFetchTask.execute(url, String.valueOf(posts.getPostid()));
         }
         else {
-            holder.mImageView.setImageBitmap(null);
+            ViewGroup.LayoutParams params = imageView.getLayoutParams();
+            params.height = 0;
+            imageView.setLayoutParams(params);
+            imageView.setImageResource(0);
+            imageView.setImageBitmap(null);
         }
 
         final String postid = String.valueOf(posts.getPostid());
