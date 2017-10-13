@@ -40,7 +40,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity{
 
     private SearchView searchView;
-    private List<String> suggestions;
+    private List<SearchSuggestions> suggestions;
     private final static String TAG = "MainActivity";
 
     @Override
@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity{
         /* Get the search view */
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setMaxWidth(Integer.MAX_VALUE);
 
         /* Handle back press on search view */
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 /* Replace with main fragment here. This is called when the search bar is closed (back button pressed) */
-                Toast.makeText(MainActivity.this, "Pressed", Toast.LENGTH_SHORT).show();
+                myPostsFragment();
                 return true;
             }
         });
@@ -87,19 +86,12 @@ public class MainActivity extends AppCompatActivity{
                 @Override
                 public void onLayoutChange(View v, int left, int top, int right, int bottom,
                                            int oldLeft, int oldTop, int oldRight, int oldBottom) {
-
-                    // calculate width of DropdownView
-                    int point[] = new int[2];
-                    dropDownAnchor.getLocationOnScreen(point);
-                    // x coordinate of DropDownView
-                    int dropDownPadding = point[0] + searchEditText.getDropDownHorizontalOffset();
-
                     Rect screenSize = new Rect();
                     getWindowManager().getDefaultDisplay().getRectSize(screenSize);
                     // screen width
                     int screenWidth = screenSize.width();
                     // set DropDownView width
-                    searchEditText.setDropDownWidth(screenWidth - dropDownPadding * 2);
+                    searchEditText.setDropDownWidth(screenWidth);
                 }
             });
         }
@@ -121,8 +113,8 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public boolean onSuggestionClick(int position) {
-                //searchView.setQuery(suggestions.get(position), false);
-                //searchView.clearFocus();
+                searchView.onActionViewCollapsed();
+                searchView.setQuery(suggestions.get(position).getName(), false);
                 changeUserFragment(suggestions.get(position));
                 return true;
             }
@@ -196,11 +188,11 @@ public class MainActivity extends AppCompatActivity{
         transaction.commit();
     }
 
-    private void changeUserFragment(String uid){
+    private void changeUserFragment(SearchSuggestions suggestion){
         // Create new fragment and transaction
         Fragment newFragment = new UserFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("uid", uid);
+        bundle.putSerializable("user", suggestion);
         newFragment.setArguments(bundle);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -276,9 +268,14 @@ public class MainActivity extends AppCompatActivity{
                     JSONObject jsonObject = new JSONObject(result);
                     Boolean status = jsonObject.getBoolean("status");
                     if(status) {
-                       Boolean isValid = jsonObject.getBoolean("data");
+                       Boolean isValid = jsonObject.has("data");
                         if(isValid){
-                            changeUserFragment(args[1]);
+                            JSONObject jbj = jsonObject.getJSONObject("data");
+                            SearchSuggestions sugs = new SearchSuggestions();
+                            sugs.setUid(jbj.getString("uid"));
+                            sugs.setName(jbj.getString("name"));
+                            sugs.setEmail(jbj.getString("email"));
+                            changeUserFragment(sugs);
                         }
                         else{
                             changeInvalidUser();
@@ -377,7 +374,12 @@ public class MainActivity extends AppCompatActivity{
                         for (int index = 0; index < jsonArr.length(); index++) {
                             JSONObject jobj = (JSONObject)jsonArr.getJSONObject(index);
                             String term = jobj.getString("uid") + " | " + jobj.getString("name") + " | " + jobj.getString("email");
-                            suggestions.add(index, jobj.getString("uid"));
+                            SearchSuggestions sugs = new SearchSuggestions();
+                            sugs.setEmail(jobj.getString("email"));
+                            sugs.setName(jobj.getString("name"));
+                            sugs.setUid(jobj.getString("uid"));
+
+                            suggestions.add(index, sugs);
                             Object[] row = new Object[]{index, term};
                             cursor.addRow(row);
                         }

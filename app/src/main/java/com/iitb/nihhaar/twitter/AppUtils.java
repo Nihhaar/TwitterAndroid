@@ -6,11 +6,18 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -21,11 +28,12 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AppUtils {
 
-    public static String servIP = "192.168.100.3";
+    public static String servIP = "192.168.100.5";
     public static String webApp = "TwitterBackend";
     public static int servPort = 8080;
 
     public static final String LOGIN_PREFS_FILE = "login_prefs";
+    public static String PAGE_SIZE = "10";
 
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -62,6 +70,10 @@ public class AppUtils {
         logoutAsyncTask.execute(url);
     }
 
+    /*
+     * We are using this interface to generate a toast message on UI thread using the asynctask.
+     * Note that this can also be done using the 'runOnUiThread' method.
+     */
     interface MyInterface {
         void myMethod(String result);
     }
@@ -100,6 +112,45 @@ public class AppUtils {
         protected void onPostExecute(String result) {
             if (mListener != null)
                 mListener.myMethod(result);
+        }
+    }
+
+    public static void addPostsToAdapter(Context context, String jsonResponse, RecyclerView.Adapter mAdapter){
+        try {
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            Boolean status = jsonObject.getBoolean("status");
+            if(status){
+                JSONArray jsonArr = jsonObject.getJSONArray("data");
+                for (int index = 0; index < jsonArr.length(); index++) {
+                    JSONObject jobj = jsonArr.getJSONObject(index);
+
+                    /* Post data */
+                    Posts posts = new Posts();
+                    posts.setPostUser(jobj.getString("uid"));
+                    posts.setPostText(jobj.getString("text"));
+                    posts.setPostid(jobj.getInt("postid"));
+                    posts.setHasImage(jobj.getBoolean("hasimg"));
+
+                    /* Comment data */
+                    JSONArray cArr = jobj.getJSONArray("Comment");
+                    ArrayList<Comments> comments = new ArrayList<>();
+                    for(int i = 0; i < cArr.length(); i++) {
+                        Comments comment = new Comments();
+                        comment.setCommentor(cArr.getJSONObject(i).getString("uid"));
+                        comment.setComment(cArr.getJSONObject(i).getString("text"));
+                        comments.add(comment);
+                    }
+                    posts.setComments(comments);
+
+                    ((MyAdapter)mAdapter).appendData(posts);
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+            else
+                AppUtils.logOut(context);
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 }

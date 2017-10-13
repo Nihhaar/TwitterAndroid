@@ -40,10 +40,7 @@ public class PostsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private EndlessRecyclerViewScrollListener scrollListener;
-    private int currentPostPosition;
-
     private static String TAG = "PostFragment";
-    private static String PAGE_SIZE = "10";
 
     public PostsFragment() {
         // Required empty public constructor
@@ -89,7 +86,7 @@ public class PostsFragment extends Fragment {
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
         String url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/SeePosts";
-        PostFetch postFetch = new PostFetch(getContext(), new MyInterface() {
+        PostFetch postFetch = new PostFetch(getContext(), new AppUtils.MyInterface() {
             @Override
             public void myMethod(String response) {
                 if(response.equals("0")){
@@ -99,115 +96,10 @@ public class PostsFragment extends Fragment {
                     Toast.makeText(getContext(), "Unable to connect to server", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    parseJsonData(response);
+                    AppUtils.addPostsToAdapter(getContext(), response, mAdapter);
                 }
             }
         });
-        postFetch.execute(url, Integer.valueOf(offset).toString(), PAGE_SIZE);
+        postFetch.execute(url, Integer.valueOf(offset).toString(), AppUtils.PAGE_SIZE);
     }
-
-    private void parseJsonData(String jsonResponse){
-        try {
-            Log.d(TAG, jsonResponse);
-            JSONObject jsonObject = new JSONObject(jsonResponse);
-            Boolean status = jsonObject.getBoolean("status");
-            if(status){
-                JSONArray jsonArr = jsonObject.getJSONArray("data");
-                for (int index = 0; index < jsonArr.length(); index++) {
-                    JSONObject jobj = jsonArr.getJSONObject(index);
-
-                    /* Post data */
-                    Posts posts = new Posts();
-                    posts.setPostUser(jobj.getString("uid"));
-                    posts.setPostText(jobj.getString("text"));
-                    posts.setPostid(jobj.getInt("postid"));
-                    posts.setHasImage(jobj.getBoolean("hasimg"));
-
-                    /* Comment data */
-                    JSONArray cArr = jobj.getJSONArray("Comment");
-                    ArrayList<Comments> comments = new ArrayList<>();
-                    for(int i = 0; i < cArr.length(); i++) {
-                        Comments comment = new Comments();
-                        comment.setCommentor(cArr.getJSONObject(i).getString("uid"));
-                        comment.setComment(cArr.getJSONObject(i).getString("text"));
-                        comments.add(comment);
-                    }
-                    posts.setComments(comments);
-
-                    ((MyAdapter)mAdapter).appendData(posts);
-                    mAdapter.notifyDataSetChanged();
-                }
-            }
-            else
-                AppUtils.logOut(getContext());
-        }
-        catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    interface MyInterface {
-        void myMethod(String result);
-    }
-
-    /* PostFetch - AsyncTask for fetching posts */
-    private class PostFetch extends AsyncTask<String, Void, String> {
-        private String mTAG = "PostFetch";
-        private MyInterface mListener;
-        private Context mContext;
-
-        public PostFetch(Context mContext, MyInterface mListener){
-            this.mContext = mContext;
-            this.mListener = mListener;
-        }
-
-        @Override
-        protected String doInBackground(String... args) {
-            Log.d(mTAG, "Connecting to Server");
-            String result = "0";
-            if(AppUtils.isNetworkAvailable(mContext)){
-                try {
-                    /* Authenticate with the server, if success store the credentials in shared prefs */
-                    URLConnection conn = new URL(args[0]).openConnection();
-                    conn.setDoOutput(true);
-
-                    /* Create the post data */
-                    String data = URLEncoder.encode("offset", "UTF-8")
-                            + "=" + URLEncoder.encode(args[1], "UTF-8");
-
-                    data += "&" + URLEncoder.encode("limit", "UTF-8") + "="
-                            + URLEncoder.encode(args[2], "UTF-8");
-
-                    /* Post the data */
-                    OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
-                    writer.write(data);
-                    writer.flush();
-                    writer.close();
-
-                    /* Get the response from server */
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuilder.append(line).append("\n");
-                    }
-                    bufferedReader.close();
-                    result = stringBuilder.toString();
-
-                } catch (IOException ex){
-                    result = "1";
-                    ex.printStackTrace();
-                }
-            }
-
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            if (mListener != null)
-                mListener.myMethod(result);
-        }
-    }
-
 }

@@ -63,10 +63,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             if ((!email.equals("")) && ( !pwd.equals("")))
             {
                 String url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/Login";
-                LoginAsyncTask loginAsyncTask = new LoginAsyncTask(this, new MyInterface() {
+                LoginAsyncTask loginAsyncTask = new LoginAsyncTask(this, new AppUtils.MyInterface() {
                     @Override
                     public void myMethod(String response) {
-                        Log.d(TAG, "Result: " + response);
                         if(response.equals("0")){
                             Toast.makeText(LoginActivity.this, "No internet connection", Toast.LENGTH_SHORT).show();
                         }
@@ -147,21 +146,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         return false;
     }
 
-    /*
-     * We are using this interface to generate a toast message on UI thread using the asynctask.
-     * Note that this can also be done using the 'runOnUiThread' method.
-     */
-    interface MyInterface {
-        void myMethod(String result);
-    }
-
     /* LoginAsyncTask - AsyncTask for login check */
     private class LoginAsyncTask extends AsyncTask<String, Void, String> {
         private String mTAG = "LoginAsyncTask";
-        private MyInterface mListener;
+        private AppUtils.MyInterface mListener;
         private Context mContext;
 
-        public LoginAsyncTask(Context mContext, MyInterface mListener){
+        public LoginAsyncTask(Context mContext, AppUtils.MyInterface mListener){
             this.mContext = mContext;
             this.mListener = mListener;
         }
