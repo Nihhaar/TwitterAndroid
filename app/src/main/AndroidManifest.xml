@@ -27,7 +27,8 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop" />
-        <activity android:name=".AddPostActivity"></activity>
+        <activity android:name=".AddPostActivity" />
+        <activity android:name=".CommentActivity"></activity>
     </application>
 
 </manifest>

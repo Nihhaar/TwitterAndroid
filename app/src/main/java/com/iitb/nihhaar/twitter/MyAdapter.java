@@ -1,6 +1,7 @@
 package com.iitb.nihhaar.twitter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -33,6 +34,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private List<Posts> mDataset;
     private Context mContext;
+    private int height;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -56,6 +58,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public MyAdapter(Context mContext, List<Posts> myDataset) {
         this.mContext = mContext;
         mDataset = myDataset;
+        height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, mContext.getResources().getDisplayMetrics());
     }
 
     public void appendData(Posts post){
@@ -86,7 +89,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         final ImageView imageView = holder.mImageView;
         if(posts.isHasImage()) {
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
-            int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, mContext.getResources().getDisplayMetrics());
             params.height = height;
             imageView.setLayoutParams(params);
             ImageFetchTask imageFetchTask = new ImageFetchTask(mContext, new MyInterface() {
@@ -103,10 +105,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             holder.mImageView.setImageBitmap(null);
         }
 
+        final String postid = String.valueOf(posts.getPostid());
         holder.mComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /* Handle add comment feature */
+                Intent commentIntent = new Intent(mContext, CommentActivity.class);
+                commentIntent.putExtra("postid", postid);
+                mContext.startActivity(commentIntent);
             }
         });
 
@@ -124,14 +130,31 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return mDataset.size();
     }
 
-    /* Converts byte array from given filename to bitmap */
-    public Bitmap getPostBitmap(String filename){
-        File file = new File(mContext.getFilesDir(), filename);
-        return BitmapFactory.decodeFile(file.getPath());
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) >= reqHeight
+                    && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
     /* InputStream to ByteArray and then convert into Bitmap */
-    public static Bitmap readFullyToBitmap(InputStream input) throws IOException
+    public static Bitmap readFullyToBitmap(InputStream input, int height) throws IOException
     {
         byte[] buffer = new byte[8192];
         int bytesRead, length = 0;
@@ -142,9 +165,19 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             length += bytesRead;
         }
 
-        Bitmap bitmap = BitmapFactory.decodeByteArray(output.toByteArray(), 0, length);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(output.toByteArray(), 0, length, options);
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, height, height);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        bitmap = BitmapFactory.decodeByteArray(output.toByteArray(), 0, length, options);
         if(bitmap == null)
             Log.d("Bitmap", "Bitmap is actually null");
+
         return bitmap;
     }
 
@@ -184,7 +217,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
                     writer.close();
 
                     /* Get the response from server and convert into bitmap */
-                    return readFullyToBitmap(conn.getInputStream());
+                    return readFullyToBitmap(conn.getInputStream(), height);
                 } catch (Exception ex){
                     ex.printStackTrace();
                 }

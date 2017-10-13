@@ -66,7 +66,6 @@ public class UserFragment extends Fragment {
                 }
                 else {
                     try {
-                        Log.d("Follow", result);
                         JSONObject jsonObject = new JSONObject(result);
                         Boolean status = jsonObject.getBoolean("status");
                         if (status) {

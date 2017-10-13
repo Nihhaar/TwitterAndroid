@@ -26,5 +26,7 @@
     <string name="sample_post">This is a sample post</string>
     <string name="comment">Comment</string>
     <string name="new_post">Whats on your Mind?</string>
+    <string name="add_comment">Add Comment</string>
+    <string name="new_comment">Write your comment</string>
 
 </resources>

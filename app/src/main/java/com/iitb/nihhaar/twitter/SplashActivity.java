@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -17,7 +18,9 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         /* Saving the session cookies */
-        CookieManager cookieManager = new CookieManager(new PersistentCookieStore(this), CookiePolicy.ACCEPT_ORIGINAL_SERVER);
+        Log.d("SplashActivity", "Saving the session cookies");
+        PersistentCookieStore persistentCookieStore = new PersistentCookieStore(this);
+        CookieManager cookieManager = new CookieManager(persistentCookieStore, CookiePolicy.ACCEPT_ALL);
         CookieHandler.setDefault(cookieManager);
 
         SharedPreferences logins = getSharedPreferences(AppUtils.LOGIN_PREFS_FILE,MODE_PRIVATE);

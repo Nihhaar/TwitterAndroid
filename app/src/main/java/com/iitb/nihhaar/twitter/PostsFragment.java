@@ -1,33 +1,16 @@
 package com.iitb.nihhaar.twitter;
 
 
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +23,8 @@ public class PostsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private EndlessRecyclerViewScrollListener scrollListener;
-    private static String TAG = "PostFragment";
+    private String url;
+    private boolean isItMe;
 
     public PostsFragment() {
         // Required empty public constructor
@@ -50,6 +34,15 @@ public class PostsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        List<Posts> posts = new ArrayList<>();
+        mAdapter = new MyAdapter(getContext(), posts);
+        isItMe = getArguments().getBoolean("isItMe");
+
+        if(isItMe)
+            url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/SeeMyPosts";
+        else
+            url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/SeePosts";
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_posts, container, false);
     }
@@ -59,9 +52,6 @@ public class PostsFragment extends Fragment {
         mRecyclerView = (RecyclerView) getView().findViewById(R.id.my_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(linearLayoutManager);
-
-        List<Posts> posts = new ArrayList<>();
-        mAdapter = new MyAdapter(getContext(), posts);
 
         // Retain an instance so that you can call `resetState()` for fresh searches
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
@@ -76,6 +66,7 @@ public class PostsFragment extends Fragment {
         mRecyclerView.addOnScrollListener(scrollListener);
         mRecyclerView.setAdapter(mAdapter);
         loadNextDataFromApi(0);
+        scrollListener.resetState();
     }
 
     /* In our case assume page size is 10 */
@@ -85,7 +76,6 @@ public class PostsFragment extends Fragment {
         //  --> Deserialize and construct new model objects from the API response
         //  --> Append the new data objects to the existing set of items inside the array of items
         //  --> Notify the adapter of the new items made with `notifyItemRangeInserted()`
-        String url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/SeePosts";
         PostFetch postFetch = new PostFetch(getContext(), new AppUtils.MyInterface() {
             @Override
             public void myMethod(String response) {
@@ -100,6 +90,6 @@ public class PostsFragment extends Fragment {
                 }
             }
         });
-        postFetch.execute(url, Integer.valueOf(offset).toString(), AppUtils.PAGE_SIZE);
+        postFetch.execute(url, Integer.valueOf(offset*10).toString(), AppUtils.PAGE_SIZE);
     }
 }

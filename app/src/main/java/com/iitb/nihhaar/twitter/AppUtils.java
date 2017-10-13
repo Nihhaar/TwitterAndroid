@@ -28,7 +28,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class AppUtils {
 
-    public static String servIP = "192.168.100.5";
+    public static String servIP = "192.168.100.7";
     public static String webApp = "TwitterBackend";
     public static int servPort = 8080;
 
@@ -45,11 +45,8 @@ public class AppUtils {
     public static void logOut(final Context mContext){
         /* Remove shared preferences */
         SharedPreferences.Editor remLogin1 = mContext.getSharedPreferences(LOGIN_PREFS_FILE,MODE_PRIVATE).edit();
-        SharedPreferences.Editor remLogin2 = mContext.getSharedPreferences(PersistentCookieStore.PREF_SESSION_COOKIE,MODE_PRIVATE).edit();
         remLogin1.clear();
-        remLogin2.clear();
         remLogin1.apply();
-        remLogin2.apply();
 
         /* Invalidate session in server if present */
         String url = "http://" + AppUtils.servIP + ":" + AppUtils.servPort + "/" + AppUtils.webApp + "/Logout";

@@ -31,6 +31,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity{
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
 
-        myPostsFragment();
+        myPostsFragment(false);
     }
 
     @Override
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 /* Replace with main fragment here. This is called when the search bar is closed (back button pressed) */
-                myPostsFragment();
+                myPostsFragment(false);
                 return true;
             }
         });
@@ -165,6 +168,7 @@ public class MainActivity extends AppCompatActivity{
                 startActivity(addPost);
                 return true;
             case R.id.view_posts:
+                myPostsFragment(true);
                 return true;
             case R.id.logout:
                 AppUtils.logOut(this);
@@ -175,9 +179,12 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
-    private void myPostsFragment(){
+    private void myPostsFragment(boolean isItMe){
         // Create new fragment and transaction
         Fragment newFragment = new PostsFragment();
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("isItMe", isItMe);
+        newFragment.setArguments(bundle);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
